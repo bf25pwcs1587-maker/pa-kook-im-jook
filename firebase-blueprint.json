@@ -1,0 +1,53 @@
+{
+  "entities": {
+    "MenuItem": {
+      "title": "MenuItem",
+      "description": "A food or drink menu item with price and cost",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "nameEn": { "type": "string" },
+        "category": { "type": "string", "enum": ["food", "drink"] },
+        "price": { "type": "number" },
+        "cost": { "type": "number" },
+        "emoji": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "category", "price", "cost"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "A sales transaction/bill recorded in the restaurant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "number" },
+        "timestamp": { "type": "string" },
+        "date": { "type": "string" },
+        "items": { "type": "array" },
+        "totalQuantity": { "type": "number" },
+        "totalRevenue": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "totalProfit": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["cash", "transfer"] },
+        "amountPaid": { "type": "number" },
+        "change": { "type": "number" },
+        "customerNote": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "orderNumber", "timestamp", "date", "totalRevenue", "totalCost", "totalProfit"]
+    }
+  },
+  "firestore": {
+    "/menuItems/{itemId}": {
+      "schema": { "$ref": "#/entities/MenuItem" },
+      "description": "Menu items with selling price and ingredient costs"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Restaurant sales records and bills"
+    }
+  }
+}

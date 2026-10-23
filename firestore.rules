@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Menu items collection
+    match /menuItems/{itemId} {
+      allow read, write: if true;
+    }
+
+    // Orders collection (sales transactions)
+    match /orders/{orderId} {
+      allow read, write: if true;
+      allow delete: if true;
+    }
+
+    // Default deny for any other path
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

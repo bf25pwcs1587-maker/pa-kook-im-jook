@@ -1,0 +1,6 @@
+{
+  "name": "Pa-Kook-Im-Jook",
+  "description": "Ready-to-use restaurant POS, daily & monthly sales intelligence, itemized quantities sold, and profit calculation with large readable typography.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
