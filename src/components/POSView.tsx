@@ -3,7 +3,8 @@ import {
   MenuItem, 
   OrderItem, 
   PaymentMethod, 
-  Order 
+  Order,
+  DiningType
 } from '../types';
 import { 
   Plus, 
@@ -16,9 +17,13 @@ import {
   ShoppingBag,
   ArrowRight,
   TrendingUp,
+  Printer,
+  User,
+  Utensils
 } from 'lucide-react';
 import { formatCurrency } from '../utils/salesCalculator';
 import { translations, Language } from '../utils/translations';
+import { PrintOrderSlipModal } from './PrintOrderSlipModal';
 
 interface POSViewProps {
   menuItems: MenuItem[];
@@ -43,6 +48,12 @@ export const POSView: React.FC<POSViewProps> = ({
   const [cashReceived, setCashReceived] = useState<number | ''>('');
   const [orderNote, setOrderNote] = useState('');
   const [lastCompletedOrder, setLastCompletedOrder] = useState<Order | null>(null);
+
+  // Takeaway and customer name state
+  const [diningType, setDiningType] = useState<DiningType>('take_away');
+  const [customerName, setCustomerName] = useState<string>('');
+  const [slipOrderToPrint, setSlipOrderToPrint] = useState<Order | null>(null);
+  const [isSlipModalOpen, setIsSlipModalOpen] = useState(false);
 
   // Cart Calculations
   const cartQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -139,7 +150,7 @@ export const POSView: React.FC<POSViewProps> = ({
   const isCashSufficient = paymentMethod === 'transfer' || numericCash >= cartSubtotal;
 
   // Complete Order
-  const handleFinalizeOrder = () => {
+  const handleFinalizeOrder = (shouldPrint: boolean = false) => {
     if (cart.length === 0) return;
     if (!isCashSufficient) return;
 
@@ -166,6 +177,8 @@ export const POSView: React.FC<POSViewProps> = ({
       amountPaid: paymentMethod === 'cash' ? numericCash : cartSubtotal,
       change: paymentMethod === 'cash' ? changeDue : 0,
       customerNote: orderNote.trim() || undefined,
+      diningType,
+      customerName: customerName.trim() || undefined,
     };
 
     onCompleteSale(newOrder);
@@ -173,6 +186,41 @@ export const POSView: React.FC<POSViewProps> = ({
     setCart([]);
     setIsCheckoutOpen(false);
     setOrderNote('');
+    setCustomerName('');
+
+    if (shouldPrint) {
+      setSlipOrderToPrint(newOrder);
+      setIsSlipModalOpen(true);
+    }
+  };
+
+  // Quick print current cart as check/draft slip before checkout
+  const handlePrintCurrentCartDraft = () => {
+    if (cart.length === 0) return;
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const draftOrder: Order = {
+      id: `draft-${Date.now()}`,
+      orderNumber: Math.floor(100 + Math.random() * 900),
+      timestamp: now.toISOString(),
+      date: `${year}-${month}-${day}`,
+      items: [...cart],
+      totalQuantity: cartQuantity,
+      totalRevenue: cartSubtotal,
+      totalCost: cartTotalCost,
+      totalProfit: cartTotalProfit,
+      paymentMethod,
+      amountPaid: cartSubtotal,
+      change: 0,
+      customerNote: orderNote.trim() || undefined,
+      diningType,
+      customerName: customerName.trim() || undefined,
+    };
+    setSlipOrderToPrint(draftOrder);
+    setIsSlipModalOpen(true);
   };
 
   // Filter Menu Items
@@ -353,6 +401,60 @@ export const POSView: React.FC<POSViewProps> = ({
             )}
           </div>
 
+          {/* Quick Dining Type & Customer Name on Top of Cart */}
+          <div className="bg-amber-50/80 p-3 border-b border-amber-200/80 space-y-2">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-bold text-amber-950">
+                {t.diningTypeLabel}
+              </span>
+              <div className="bg-white rounded-xl p-0.5 border border-amber-300 flex">
+                <button
+                  type="button"
+                  onClick={() => setDiningType('take_away')}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    diningType === 'take_away'
+                      ? 'bg-amber-500 text-slate-950 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  🥡 {lang === 'th' ? 'สั่งกลับบ้าน' : 'Take Away'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDiningType('dine_in')}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                    diningType === 'dine_in'
+                      ? 'bg-amber-500 text-slate-950 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  🍽️ {lang === 'th' ? 'ทานที่ร้าน' : 'Dine In'}
+                </button>
+              </div>
+            </div>
+
+            {/* Customer Name Input (To print on top of the slip) */}
+            <div className="flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 border border-amber-300 shadow-2xs">
+              <User className="w-4 h-4 text-amber-600 shrink-0" />
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder={t.customerNamePlaceholder}
+                className="w-full text-xs font-bold text-slate-900 focus:outline-none bg-transparent placeholder:font-normal"
+              />
+              {customerName && (
+                <button
+                  type="button"
+                  onClick={() => setCustomerName('')}
+                  className="text-slate-400 hover:text-slate-600 text-xs px-1"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto p-3 sm:p-4 divide-y divide-slate-100">
             {cart.length === 0 ? (
@@ -456,16 +558,27 @@ export const POSView: React.FC<POSViewProps> = ({
                 </div>
               </div>
 
-              {/* Big Checkout Trigger Button */}
-              <button
-                type="button"
-                onClick={handleOpenCheckout}
-                className="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-lg sm:text-xl shadow-lg shadow-amber-500/30 flex items-center justify-center gap-3 transition-all cursor-pointer transform active:scale-[0.98]"
-              >
-                <Banknote className="w-6 h-6" />
-                <span>{t.checkoutBtn}</span>
-                <ArrowRight className="w-5 h-5 ml-auto" />
-              </button>
+              {/* Checkout Trigger Buttons */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrintCurrentCartDraft}
+                  className="px-3.5 py-3.5 sm:py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm border border-slate-300/80 flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  title={lang === 'th' ? 'พิมพ์ใบสรุปรายการสำหรับเช็คของ / ติดหน้าถุง' : 'Print Draft Slip'}
+                >
+                  <Printer className="w-5 h-5 text-amber-600" />
+                  <span className="hidden sm:inline">{lang === 'th' ? 'พิมพ์สลิป' : 'Slip'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleOpenCheckout}
+                  className="flex-1 py-3.5 sm:py-4 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-base sm:text-xl shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition-all cursor-pointer transform active:scale-[0.98]"
+                >
+                  <Banknote className="w-6 h-6" />
+                  <span>{t.checkoutBtn}</span>
+                  <ArrowRight className="w-5 h-5 ml-auto" />
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -499,8 +612,54 @@ export const POSView: React.FC<POSViewProps> = ({
               </button>
             </div>
 
+            {/* Dining Type and Customer Name on Top of Checkout */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 my-3 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700">
+                  {t.diningTypeLabel}
+                </span>
+                <div className="bg-white rounded-xl p-0.5 border border-slate-300 flex">
+                  <button
+                    type="button"
+                    onClick={() => setDiningType('take_away')}
+                    className={`px-3 py-1 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                      diningType === 'take_away'
+                        ? 'bg-amber-500 text-slate-950 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🥡 {lang === 'th' ? 'สั่งกลับบ้าน' : 'Take Away'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDiningType('dine_in')}
+                    className={`px-3 py-1 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1 ${
+                      diningType === 'dine_in'
+                        ? 'bg-amber-500 text-slate-950 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    🍽️ {lang === 'th' ? 'ทานที่ร้าน' : 'Dine In'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                  👤 {t.customerNameLabel}
+                </label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder={t.customerNamePlaceholder}
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+            </div>
+
             {/* Total Due Banner with Extra Large Font */}
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 my-4 text-center">
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 my-2 text-center">
               <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-amber-800">
                 {t.totalDue}
               </span>
@@ -607,27 +766,41 @@ export const POSView: React.FC<POSViewProps> = ({
               />
             </div>
 
-            {/* Confirm Payment Button */}
-            <div className="flex gap-2">
+            {/* Confirm Payment Buttons: Cancel, Save & Print, Save Only */}
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 type="button"
                 onClick={() => setIsCheckoutOpen(false)}
-                className="w-1/3 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm sm:text-base cursor-pointer"
+                className="py-3 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm cursor-pointer sm:w-1/4"
               >
                 {t.cancel}
               </button>
               <button
                 type="button"
                 disabled={!isCashSufficient}
-                onClick={handleFinalizeOrder}
-                className={`w-2/3 py-3 rounded-xl font-black text-base sm:text-lg flex items-center justify-center gap-2 cursor-pointer shadow-lg transition ${
+                onClick={() => handleFinalizeOrder(true)}
+                className={`py-3 px-3 rounded-xl font-black text-sm sm:text-base flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition sm:w-1/2 ${
+                  isCashSufficient
+                    ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/20'
+                    : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                }`}
+                title="Save order and immediately open printable take away slip"
+              >
+                <Printer className="w-4 h-4" />
+                <span>{t.completeSaleAndPrintBtn}</span>
+              </button>
+              <button
+                type="button"
+                disabled={!isCashSufficient}
+                onClick={() => handleFinalizeOrder(false)}
+                className={`py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition sm:w-1/4 ${
                   isCashSufficient
                     ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30'
                     : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                 }`}
               >
-                <CheckCircle2 className="w-5 h-5" />
-                <span>{t.completeSaleBtn}</span>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{lang === 'th' ? 'บันทึก' : 'Save'}</span>
               </button>
             </div>
           </div>
@@ -636,27 +809,52 @@ export const POSView: React.FC<POSViewProps> = ({
 
       {/* Success Banner if sale was just completed */}
       {lastCompletedOrder && (
-        <div className="fixed bottom-4 right-4 z-40 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-amber-500 flex items-center gap-3 max-w-sm animate-in slide-in-from-bottom duration-200">
-          <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold">
+        <div className="fixed bottom-4 right-4 z-40 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-amber-500 flex items-center gap-3 max-w-md animate-in slide-in-from-bottom duration-200">
+          <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shrink-0">
             ✓
           </div>
-          <div className="flex-1">
-            <h5 className="font-extrabold text-sm sm:text-base">
+          <div className="flex-1 min-w-0">
+            <h5 className="font-extrabold text-sm sm:text-base truncate">
               {lang === 'th' ? `บันทึกบิล #${lastCompletedOrder.orderNumber} สำเร็จ!` : `Order #${lastCompletedOrder.orderNumber} Saved!`}
             </h5>
-            <p className="text-xs text-slate-300">
-              {t.revenueSummary}: ฿{formatCurrency(lastCompletedOrder.totalRevenue)} • {t.profitSummary}: +฿{formatCurrency(lastCompletedOrder.totalProfit)}
+            <p className="text-xs text-slate-300 truncate">
+              {lastCompletedOrder.customerName ? `👤 ${lastCompletedOrder.customerName} • ` : ''}
+              {lastCompletedOrder.diningType === 'take_away' ? '🥡 กลับบ้าน • ' : '🍽️ ทานที่ร้าน • '}
+              ฿{formatCurrency(lastCompletedOrder.totalRevenue)}
             </p>
           </div>
+
+          {/* Quick Print Slip Trigger */}
+          <button
+            type="button"
+            onClick={() => {
+              setSlipOrderToPrint(lastCompletedOrder);
+              setIsSlipModalOpen(true);
+            }}
+            className="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1 cursor-pointer shrink-0 shadow-sm"
+            title="Print order summary slip"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>{lang === 'th' ? 'พิมพ์สลิป' : 'Slip'}</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setLastCompletedOrder(null)}
-            className="text-xs text-slate-400 hover:text-white cursor-pointer"
+            className="text-xs text-slate-400 hover:text-white cursor-pointer ml-1"
           >
             ✕
           </button>
         </div>
       )}
+
+      {/* Printable Order Slip Modal (Takeaway & Dine In) */}
+      <PrintOrderSlipModal
+        order={slipOrderToPrint}
+        isOpen={isSlipModalOpen}
+        onClose={() => setIsSlipModalOpen(false)}
+        lang={lang}
+      />
     </div>
   );
 };

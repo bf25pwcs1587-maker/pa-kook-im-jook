@@ -25,6 +25,8 @@ export interface OrderItem {
 
 export type PaymentMethod = 'cash' | 'transfer';
 
+export type DiningType = 'take_away' | 'dine_in';
+
 export interface Order {
   id: string;
   orderNumber: number;
@@ -39,6 +41,8 @@ export interface Order {
   amountPaid: number;
   change: number;
   customerNote?: string;
+  diningType?: DiningType;
+  customerName?: string;
 }
 
 export interface ItemSalesSummary {

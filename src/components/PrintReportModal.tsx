@@ -225,8 +225,10 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
   </div>
 
   <div class="footer">
-    <div>พิมพ์เมื่อ: ${new Date().toLocaleString(lang === 'th' ? 'th-TH' : 'en-US')}</div>
-    <div>ระบบร้านอาหาร Pa-Kook-Im-Jook (Cloud DB)</div>
+    <div style="font-weight: bold; font-size: 13px; color: #0f172a; margin-bottom: 4px;">ขอบคุณที่มาทานอาหารกับเรา !</div>
+    <div style="font-size: 11px; color: #475569; margin-bottom: 6px;">หวังว่าคุณจะมีความสุขกับมื้ออาหารแสนอร่อย หากมีสิ่งใดผิดพลาดหรือขาดตกบกพร่อง โปรดแจ้งให้เราทราบได้เลยนะคะ ❤️😊</div>
+    <div style="font-size: 12px; font-weight: 800; color: #b45309;">ใบสรุปรายการอาหาร (Order Summary)</div>
+    <div style="font-size: 10px; color: #94a3b8; margin-top: 6px;">พิมพ์เมื่อ: ${new Date().toLocaleString(lang === 'th' ? 'th-TH' : 'en-US')} • ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)</div>
   </div>
 </body>
 </html>`;
@@ -521,10 +523,11 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
               </div>
 
               {/* Orders count & timestamp */}
-              <div className="mt-4 pt-3 border-t border-dashed border-slate-300 text-center text-[11px] text-slate-500">
-                <p>{lang === 'th' ? 'จำนวนบิลทั้งหมด' : 'Total Orders'}: {report.totalOrders} {lang === 'th' ? 'บิล' : 'orders'} • {lang === 'th' ? 'เฉลี่ยบิลละ' : 'Avg/Order'} ฿{report.averageOrderValue}</p>
-                <p className="mt-1">{lang === 'th' ? 'พิมพ์เมื่อ' : 'Printed on'}: {new Date().toLocaleString(lang === 'th' ? 'th-TH' : 'en-US')}</p>
-                <p className="font-bold text-slate-700 mt-0.5">ขอบคุณที่ใช้บริการ ป้ากุ๊กอิ่มจุก</p>
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-300 text-center text-[11px] text-slate-500 space-y-1">
+                <p className="font-bold text-slate-800 text-xs">ขอบคุณที่มาทานอาหารกับเรา !</p>
+                <p className="text-slate-600 text-[11px] leading-relaxed">หวังว่าคุณจะมีความสุขกับมื้ออาหารแสนอร่อย หากมีสิ่งใดผิดพลาดหรือขาดตกบกพร่อง โปรดแจ้งให้เราทราบได้เลยนะคะ ❤️😊</p>
+                <p className="font-black text-amber-700 text-xs">ใบสรุปรายการอาหาร (Order Summary)</p>
+                <p className="text-[10px] text-slate-400 mt-1">พิมพ์เมื่อ: {new Date().toLocaleString(lang === 'th' ? 'th-TH' : 'en-US')} • ป้ากุ๊กอิ่มจุก</p>
               </div>
             </div>
           </div>

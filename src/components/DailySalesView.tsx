@@ -25,6 +25,7 @@ import {
 import { translations, Language } from '../utils/translations';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { PrintReportModal } from './PrintReportModal';
+import { PrintOrderSlipModal } from './PrintOrderSlipModal';
 
 interface DailySalesViewProps {
   orders: Order[];
@@ -49,6 +50,8 @@ export const DailySalesView: React.FC<DailySalesViewProps> = ({
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [deletedToast, setDeletedToast] = useState<string | null>(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [slipOrderToPrint, setSlipOrderToPrint] = useState<Order | null>(null);
+  const [isSlipModalOpen, setIsSlipModalOpen] = useState(false);
 
   // Compute daily report
   const dailyReport: SalesReport = calculateDailyReport(orders, selectedDate, menuItems);
@@ -595,13 +598,21 @@ export const DailySalesView: React.FC<DailySalesViewProps> = ({
                   <div>
                     {/* Bill Header */}
                     <div className="flex items-center justify-between pb-2 border-b border-slate-200/80">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="font-black text-slate-900 text-base sm:text-lg">
                           #{order.orderNumber}
                         </span>
                         <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" />
                           {timeStr}
+                        </span>
+                        {/* Take Away / Dine In Badge */}
+                        <span className={`text-[11px] font-black px-2 py-0.5 rounded-md ${
+                          order.diningType === 'dine_in'
+                            ? 'bg-slate-200 text-slate-700'
+                            : 'bg-amber-100 text-amber-900 border border-amber-300'
+                        }`}>
+                          {order.diningType === 'dine_in' ? '🍽️ ทานที่ร้าน' : '🥡 สั่งกลับบ้าน'}
                         </span>
                       </div>
                       <span
@@ -614,6 +625,14 @@ export const DailySalesView: React.FC<DailySalesViewProps> = ({
                         {order.paymentMethod === 'cash' ? `💵 ${t.cashMethod}` : `📱 ${t.qrMethod}`}
                       </span>
                     </div>
+
+                    {/* Customer Name on card if provided */}
+                    {order.customerName && (
+                      <div className="pt-1.5 text-xs font-extrabold text-amber-800 flex items-center gap-1">
+                        <span>👤 ลูกค้า:</span>
+                        <span className="text-slate-900">{order.customerName}</span>
+                      </div>
+                    )}
 
                     {/* Item list */}
                     <div className="py-2.5 space-y-1.5 text-xs sm:text-sm text-slate-700">
@@ -630,8 +649,8 @@ export const DailySalesView: React.FC<DailySalesViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Bill Footer with Revenue, Profit and Functional Delete Button */}
-                  <div className="pt-2.5 border-t border-slate-200 flex items-center justify-between">
+                  {/* Bill Footer with Revenue, Profit and Action Buttons */}
+                  <div className="pt-2.5 border-t border-slate-200 flex items-center justify-between gap-2">
                     <div>
                       <span className="text-xs text-slate-500 block font-medium">
                         {t.revenueSummary}: <strong className="text-slate-800">฿{formatCurrency(order.totalRevenue)}</strong>
@@ -640,16 +659,33 @@ export const DailySalesView: React.FC<DailySalesViewProps> = ({
                         {t.profitSummary}: +฿{formatCurrency(order.totalProfit)}
                       </span>
                     </div>
-                    {/* Big Accessible Delete Button that triggers custom modal */}
-                    <button
-                      type="button"
-                      onClick={() => setOrderToDelete(order)}
-                      className="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
-                      title={t.deleteOrderTitle}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>{lang === 'th' ? 'ลบบิล' : 'Void'}</span>
-                    </button>
+
+                    <div className="flex items-center gap-1.5">
+                      {/* Print Take Away / Order Slip Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSlipOrderToPrint(order);
+                          setIsSlipModalOpen(true);
+                        }}
+                        className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-900 hover:text-slate-950 border border-amber-300 font-black text-xs flex items-center gap-1 transition cursor-pointer"
+                        title={lang === 'th' ? 'พิมพ์ใบสรุปรายการอาหาร / สลิปกลับบ้าน' : 'Print Order Slip'}
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>{lang === 'th' ? 'พิมพ์สลิป' : 'Slip'}</span>
+                      </button>
+
+                      {/* Accessible Delete Button that triggers custom modal */}
+                      <button
+                        type="button"
+                        onClick={() => setOrderToDelete(order)}
+                        className="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 transition-all flex items-center gap-1 text-xs font-bold cursor-pointer"
+                        title={t.deleteOrderTitle}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>{lang === 'th' ? 'ลบบิล' : 'Void'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -674,6 +710,14 @@ export const DailySalesView: React.FC<DailySalesViewProps> = ({
         reportType="daily"
         periodTitle={selectedDate}
         report={dailyReport}
+        lang={lang}
+      />
+
+      {/* Printable Order Slip Modal (Takeaway & Dine In) */}
+      <PrintOrderSlipModal
+        order={slipOrderToPrint}
+        isOpen={isSlipModalOpen}
+        onClose={() => setIsSlipModalOpen(false)}
         lang={lang}
       />
     </div>

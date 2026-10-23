@@ -38,9 +38,15 @@ export const translations = {
     cartProfitLabel: 'กำไรสำหรับบิลนี้:',
     totalAmountLabel: 'ยอดรวมทั้งสิ้น:',
     checkoutBtn: 'คิดเงิน / ชำระเงิน',
+    printSlipBtn: '🖨️ พิมพ์ใบสรุป (Slip)',
     
-    // Checkout Modal
-    paymentTitle: 'ชำระเงิน',
+    // Checkout Modal & Takeaway
+    diningTypeLabel: 'ประเภทการสั่ง:',
+    takeAway: '🥡 สั่งกลับบ้าน (Take Away)',
+    dineIn: '🍽️ ทานที่ร้าน (Dine In)',
+    customerNameLabel: 'ชื่อลูกค้า (สำหรับติดหน้าถุง/พิมพ์บนหัวบิล):',
+    customerNamePlaceholder: 'ระบุชื่อลูกค้า (เช่น คุณสมชาย, พี่แอน)',
+    paymentTitle: 'ชำระเงิน & พิมพ์ใบสรุปรายการ',
     paymentSub: 'รายการอาหารและเครื่องดื่มในบิลนี้',
     totalDue: 'ยอดที่ต้องชำระ (Total Due)',
     cashMethod: 'เงินสด (Cash)',
@@ -49,12 +55,17 @@ export const translations = {
     exactCash: 'พอดี',
     changeDueLabel: 'เงินทอน (Change Due):',
     shortAmount: 'ยังขาด',
-    orderNotePlaceholder: 'หมายเหตุ (เช่น โต๊ะ 2, ไม่เผ็ด, กลับบ้าน)',
+    orderNotePlaceholder: 'หมายเหตุเพิ่มเติม (เช่น ไม่เผ็ด, แยกน้ำ, รับที่หน้าร้าน)',
     cancel: 'ยกเลิก',
     completeSaleBtn: 'บันทึกยอดขาย สำเร็จ ✓',
+    completeSaleAndPrintBtn: 'บันทึก & พิมพ์ใบสรุป 🖨️',
     orderSavedSuccess: 'บันทึกบิลสำเร็จ!',
     revenueSummary: 'ยอดขาย',
     profitSummary: 'กำไร',
+    orderSummaryTitle: 'ใบสรุปรายการอาหาร\n(Order Summary)',
+    takeawayThankYou1: 'ขอบคุณที่มาทานอาหารกับเรา !',
+    takeawayThankYou2: 'หวังว่าคุณจะมีความสุขกับมื้ออาหารแสนอร่อย หากมีสิ่งใดผิดพลาดหรือขาดตกบกพร่อง โปรดแจ้งให้เราทราบได้เลยนะคะ ❤️😊',
+    orderSummaryTag: 'ใบสรุปรายการอาหาร (Order Summary)',
 
     // Daily Sales
     prevDay: 'วันก่อน',
@@ -185,9 +196,15 @@ export const translations = {
     cartProfitLabel: 'Profit on this bill:',
     totalAmountLabel: 'Total Amount:',
     checkoutBtn: 'Checkout & Pay',
+    printSlipBtn: '🖨️ Print Slip',
     
-    // Checkout Modal
-    paymentTitle: 'Checkout & Payment',
+    // Checkout Modal & Takeaway
+    diningTypeLabel: 'Dining Type:',
+    takeAway: '🥡 Take Away (To Home)',
+    dineIn: '🍽️ Dine In',
+    customerNameLabel: 'Customer Name (printed on top of slip):',
+    customerNamePlaceholder: 'Enter customer name (e.g. John, Alice)',
+    paymentTitle: 'Checkout & Print Order Summary',
     paymentSub: 'Food and beverage items in this bill',
     totalDue: 'Total Due Amount',
     cashMethod: 'Cash Payment',
@@ -196,12 +213,17 @@ export const translations = {
     exactCash: 'Exact',
     changeDueLabel: 'Change Due:',
     shortAmount: 'Short',
-    orderNotePlaceholder: 'Order note (e.g. Table 2, Extra spicy, Takeaway)',
+    orderNotePlaceholder: 'Order note (e.g. Extra spicy, Pack separately, Pickup)',
     cancel: 'Cancel',
     completeSaleBtn: 'Save Sale Order ✓',
+    completeSaleAndPrintBtn: 'Save & Print Slip 🖨️',
     orderSavedSuccess: 'Sale recorded successfully!',
     revenueSummary: 'Revenue',
     profitSummary: 'Profit',
+    orderSummaryTitle: 'Order Summary\n(ใบสรุปรายการอาหาร)',
+    takeawayThankYou1: 'ขอบคุณที่มาทานอาหารกับเรา ! (Thank you for dining with us!)',
+    takeawayThankYou2: 'หวังว่าคุณจะมีความสุขกับมื้ออาหารแสนอร่อย หากมีสิ่งใดผิดพลาดหรือขาดตกบกพร่อง โปรดแจ้งให้เราทราบได้เลยนะคะ ❤️😊 (Hope you enjoy your delicious meal! If anything is missing or incorrect, please let us know right away ❤️😊)',
+    orderSummaryTag: 'ใบสรุปรายการอาหาร (Order Summary)',
 
     // Daily Sales
     prevDay: 'Prev Day',
