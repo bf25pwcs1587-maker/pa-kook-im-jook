@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Order, DiningType } from '../types';
 import { formatCurrency } from '../utils/salesCalculator';
 import { Language, translations } from '../utils/translations';
+import { SHOP_LOGO_URL } from '../utils/constants';
 import { 
   Printer, 
   Download, 
@@ -231,7 +232,8 @@ export const PrintOrderSlipModal: React.FC<PrintOrderSlipModalProps> = ({
 </head>
 <body>
   <div class="header">
-    <div class="shop-title">🍳 ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)</div>
+    <img src="${SHOP_LOGO_URL}" alt="Logo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; margin: 0 auto 6px auto; display: block; border: 1.5px solid #d97706;" />
+    <div class="shop-title">ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)</div>
     <div class="slip-doc-title">ใบสรุปรายการอาหาร (Order Summary)</div>
     <div class="takeaway-badge">${diningBadgeText}</div>
   </div>
@@ -441,8 +443,13 @@ export const PrintOrderSlipModal: React.FC<PrintOrderSlipModalProps> = ({
             
             {/* Header with Name & Order Type */}
             <div className="text-center pb-3 border-b-2 border-dashed border-slate-900">
+              <img
+                src={SHOP_LOGO_URL}
+                alt="Pa-Kook-Im-Jook Logo"
+                className="w-16 h-16 object-cover rounded-2xl border-2 border-amber-500 mx-auto mb-2 shadow-sm"
+              />
               <h2 className="text-xl sm:text-2xl font-black text-amber-600 leading-tight">
-                🍳 ป้ากุ๊กอิ่มจุก
+                ป้ากุ๊กอิ่มจุก
               </h2>
               <div className="text-xs font-extrabold text-slate-700 tracking-wider uppercase mt-0.5">
                 ใบสรุปรายการอาหาร (Order Summary)

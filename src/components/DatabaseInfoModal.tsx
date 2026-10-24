@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Database, ShieldCheck, RefreshCw, Trash2, CheckCircle2, AlertTriangle, X } from 'lucide-react';
 import { Language } from '../utils/translations';
+import { SHOP_LOGO_URL } from '../utils/constants';
 
 interface DatabaseInfoModalProps {
   isOpen: boolean;
@@ -51,15 +52,17 @@ export const DatabaseInfoModal: React.FC<DatabaseInfoModalProps> = ({
         {/* Header */}
         <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-xl shadow-md">
-              <Database className="w-5 h-5" />
-            </div>
+            <img
+              src={SHOP_LOGO_URL}
+              alt="Logo"
+              className="w-11 h-11 rounded-2xl object-cover border border-amber-400 shadow-md"
+            />
             <div>
-              <h3 className="text-lg font-black text-white">
-                {lang === 'th' ? 'ฐานข้อมูลคลาวด์ & การส่งมอบให้ลูกค้า' : 'Cloud Database & Customer Handover'}
+              <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <span>{lang === 'th' ? 'ฐานข้อมูล & การส่งมอบ' : 'Cloud Database & Handover'}</span>
               </h3>
               <p className="text-xs text-slate-400">
-                Google Cloud Firestore • Persistent Storage
+                Pa-Kook-Im-Jook • Persistent Cloud Firestore
               </p>
             </div>
           </div>

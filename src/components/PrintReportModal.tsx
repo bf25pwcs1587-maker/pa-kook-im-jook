@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ItemSalesSummary, SalesReport } from '../types';
 import { formatCurrency } from '../utils/salesCalculator';
 import { Language, translations } from '../utils/translations';
+import { SHOP_LOGO_URL } from '../utils/constants';
 import { 
   Printer, 
   Download, 
@@ -172,7 +173,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
 </head>
 <body>
   <div class="header">
-    <div class="logo-title">🍳 ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)</div>
+    <img src="${SHOP_LOGO_URL}" alt="Logo" style="width: 58px; height: 58px; object-fit: cover; border-radius: 12px; margin: 0 auto 6px auto; display: block; border: 1.5px solid #d97706;" />
+    <div class="logo-title">ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)</div>
     <div class="sub-title">${reportHeaderTitle}</div>
     <div class="period-box">📅 ${periodTitle}</div>
   </div>
@@ -419,8 +421,13 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
           >
             {/* Store Banner */}
             <div className="text-center pb-4 border-b-2 border-slate-900">
+              <img
+                src={SHOP_LOGO_URL}
+                alt="Pa-Kook-Im-Jook Logo"
+                className="w-16 h-16 object-cover rounded-2xl border-2 border-amber-500 mx-auto mb-2 shadow-sm"
+              />
               <h2 className="text-xl sm:text-2xl font-black text-amber-600 leading-tight">
-                🍳 ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)
+                ป้ากุ๊กอิ่มจุก (Pa-Kook-Im-Jook)
               </h2>
               <p className="text-xs font-bold text-slate-600 mt-0.5">
                 {reportHeaderTitle}

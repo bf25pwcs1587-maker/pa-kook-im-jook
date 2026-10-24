@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { FontSizeSetting } from '../types';
 import { translations, Language } from '../utils/translations';
+import { SHOP_LOGO_URL } from '../utils/constants';
 
 interface HeaderProps {
   activeTab: 'pos' | 'daily' | 'monthly' | 'menu';
@@ -44,8 +45,18 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Logo & Shop Title with Pa-Kook-Im-Jook */}
           <div className="flex items-center space-x-3">
-            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-amber-500/30 font-bold text-2xl">
-              🍳
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden bg-gradient-to-tr from-amber-500 to-orange-500 border-2 border-amber-400 shadow-md shadow-amber-500/25 flex items-center justify-center shrink-0">
+              <img
+                src={SHOP_LOGO_URL}
+                alt="Pa-Kook-Im-Jook Logo"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLElement).style.display = 'none';
+                }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center font-bold text-2xl -z-10">
+                🍳
+              </span>
             </div>
             <div>
               <div className="flex items-center gap-2">
